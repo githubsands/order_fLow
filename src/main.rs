@@ -4,16 +4,13 @@ use {
     std::option, std::result, thiserror::Error,
 };
 
-// use async_http_client::{HttpCodec, HttpRequest};
-//
-fn main() {}
-
 #[derive(Clone, Debug, PartialEq)]
 pub struct Order {
     id: u64,
 }
 
 pub struct Config {
+    orders_size: i64,
     id: i64,
     asset: String,
     style: String,
@@ -24,9 +21,8 @@ pub struct Trader {
     id: i64,
     asset: String,
     strategy: String,
-
+    orders_size: i32,
     orders: Vec<Order>,
-
     client: Easy,
 }
 
@@ -48,6 +44,16 @@ pub fn build_exchanges() -> Exchanges {
 pub enum ExchangeError {
     #[error("exchange does not exist: {0}")]
     ExchangeDoesNotExist(String),
+    #[error("orders do not exist: {0}")]
+    ExchangeOrdersDoNotExit(string),
+}
+
+#[derive(Error, Debug)]
+pub enum OrdersTraderErrors {
+    #[error("order does not exist: {0}")]
+    OrdersTraderOrderDoesExist(string),
+    #[error("orders do not exist: {0}")]
+    OrdersTraderOrdersDoNotExist(string),
 }
 
 impl Exchanges {
@@ -56,9 +62,7 @@ impl Exchanges {
         match exchange {
             Some(_exchange) => Ok(exchange_name),
             None => {
-                return Err(ExchangeError::ExchangeDoesNotExist(
-                    exchange_name.to_string(),
-                ))
+                Err(ExchangeError::ExchangeDoesNotExist(exchange_name.to_string()))
             }
         }
     }
@@ -67,16 +71,17 @@ impl Exchanges {
 //    let mut map = HashMap::new();
 #[derive(Error, Debug)]
 pub enum TraderClientError {
+    #[error("no orders exist")]
+    TraderOrderNoErrorsExist(),
     #[error("order does not exist: {0}")]
     TraderOrderDoesNotExistError(u64),
 }
 
 impl Trader {
-    pub fn new(market_uri: &str, id: i64, asset: String, strategy: String) -> Self {
+    pub fn new(market_uri: &str, id: i64, orders_size: i8, asset: String, strategy: String) -> Self {
         let mut easy = Easy::new();
         easy.url(market_uri).unwrap();
-
-        let orders: Vec<Order> = Vec::new();
+        let orders: Vec<Order> = Vec::with_capacity(orders_size)
         Self {
             id: id,
             asset: asset,
@@ -85,12 +90,14 @@ impl Trader {
             client: easy,
         }
     }
-
     pub fn add_order(&mut self, order: Order) {
         self.orders.push(order)
     }
-    pub fn orders(self) -> Vec<Order> {
-        return self.orders;
+    pub fn orders(self) -> Result<Vec<Order>, TraderOrderNoErrorsExist>( {
+        if self.orders.len() == 0 {
+            Err(TraderClientError::TraderOrderNoOrdersExist())
+        }
+        Ok(self.orders);
     }
     pub fn orders_add(&mut self, mut orders: Vec<Order>) {
         self.orders.append(&mut orders)
@@ -99,25 +106,31 @@ impl Trader {
         for (_index, value) in self.orders.iter().enumerate() {
             if value.id == id {
                 let order = value.clone();
-                return Ok(order);
+                Ok(order);
             }
         }
-        return Err(TraderClientError::TraderOrderDoesNotExistError(id));
+        Err(TraderClientError::TraderOrderDoesNotExistError(id));
     }
     pub fn remove_order(&mut self, id: u64) -> Result<(), TraderClientError> {
         for order in &mut self.orders {
             if order.id == id {
                 order.id = 0;
-                return Ok(());
+                Ok(());
             }
         }
-        return Err(TraderClientError::TraderOrderDoesNotExistError(id));
+        Err(TraderClientError::Trader:$OrderDoesNotExistError(id));
     }
-    /*
+    // TODO: Use a better algorithm here then O(2n)
+    pub fn remove_orders(&mut self, orders: Vec<i8>) -> Result<(), OrdersDoNotExistError> {
+        for order in &mut self.orders {
+            if order.id == id {
+                self.orders (
+            }
+        }
+    }
     pub fn send_order_to_exchange(&mut self, exchange: String) Result {
         handle.url(exchange).unwrap();
     }
-    */
 }
 
 #[cfg(test)]
@@ -130,5 +143,12 @@ mod tests {
         let trader_client = build_trader(12, asset, strategy);
         let order = Order { id: 12 };
         trader_client.add_order(order);
+    }
+    #[test]
+    fn test_trader_orders_size() {
+        let max_size = usize::
+        let orders_size_array = i8::from(10000);
+        let trader_client = build_trader(12, asset, strategy);
+        assert_eq!(trader_client.orders(), 10000);
     }
 }
