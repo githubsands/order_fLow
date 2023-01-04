@@ -4,6 +4,27 @@ use {
     std::option, std::result, thiserror::Error,
 };
 
+pub struct Core {
+    exchanges: vec![Exchange],
+}
+
+impl Core {
+    pub fn new() {
+        // exchanges = boot_exchanges()
+        Self {
+            // exchanges: exchanges,
+        }
+    }
+    pub fn boot_exchanges() -> vec![Exchange] {}
+    pub fn receive_signals() {
+        loop {
+            select! {
+                recv(r) -> signal => println!("received signals"),
+            }
+        }
+    }
+}
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct Order {
     id: u64,
@@ -14,16 +35,6 @@ pub struct Config {
     id: i64,
     asset: String,
     style: String,
-}
-
-#[allow(unused_variables)]
-pub struct Trader {
-    id: i64,
-    asset: String,
-    strategy: String,
-    orders_size: i32,
-    orders: Vec<Order>,
-    client: Easy,
 }
 
 pub struct Exchanges {
@@ -68,15 +79,6 @@ impl Exchanges {
     }
 }
 
-//    let mut map = HashMap::new();
-#[derive(Error, Debug)]
-pub enum TraderClientError {
-    #[error("no orders exist")]
-    TraderOrderNoErrorsExist(),
-    #[error("order does not exist: {0}")]
-    TraderOrderDoesNotExistError(u64),
-}
-
 impl Trader {
     pub fn new(market_uri: &str, id: i64, orders_size: i8, asset: String, strategy: String) -> Self {
         let mut easy = Easy::new();
@@ -118,7 +120,7 @@ impl Trader {
                 Ok(());
             }
         }
-        Err(TraderClientError::Trader:$OrderDoesNotExistError(id));
+        Err(TraderClientError::Trader:OrderDoesNotExistError(id));
     }
     // TODO: Use a better algorithm here then O(2n)
     pub fn remove_orders(&mut self, orders: Vec<i8>) -> Result<(), OrdersDoNotExistError> {
@@ -130,25 +132,5 @@ impl Trader {
     }
     pub fn send_order_to_exchange(&mut self, exchange: String) Result {
         handle.url(exchange).unwrap();
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn test_trader_client() {
-        let id = i64::from(12);
-        let asset = String::from("BTC/USD");
-        let strategy = String::from("market-maker");
-        let trader_client = build_trader(12, asset, strategy);
-        let order = Order { id: 12 };
-        trader_client.add_order(order);
-    }
-    #[test]
-    fn test_trader_orders_size() {
-        let max_size = usize::
-        let orders_size_array = i8::from(10000);
-        let trader_client = build_trader(12, asset, strategy);
-        assert_eq!(trader_client.orders(), 10000);
     }
 }

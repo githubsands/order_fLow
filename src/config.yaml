@@ -1,8 +1,0 @@
----
-exchanges:
-  kraken:
-    name: kraken
-    uri: ws.kraken.com
-  binance:
-    name: binance
-    uri: wss://stream.binance.com:9443
