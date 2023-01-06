@@ -102,6 +102,7 @@ name = "exchange"
 version = "0.1.0"
 dependencies = [
  "crossbeam-channel",
+ "serde",
  "ws",
 ]
 
@@ -324,6 +325,12 @@ checksum = "ca3129af7b92a17112d59ad498c6f81eaf463253766b90396d39ea7a39d6613c"
 dependencies = [
  "rand_core",
 ]
+
+[[package]]
+name = "serde"
+version = "1.0.152"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bb7d1f0d3021d347a83e556fc4683dea2ea09d87bccdf88ff5c12545d89d5efb"
 
 [[package]]
 name = "sha-1"

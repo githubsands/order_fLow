@@ -1,46 +1,52 @@
-extern crate ws;
-
-// kuse std::error::Error;
-use crossbeam_channel::{unbounded, Sender};
+use crossbeam_channel::unbounded;
 use std::sync::{Arc, Mutex};
 use std::{thread, time};
-use ws::{connect, listen, CloseCode, Factory, Handler, WebSocket};
+use ws::{connect, listen, CloseCode, Factory, Handler, Sender, WebSocket};
 
 pub struct Exchange {
-    ws: WebSocket<FnMut<ws::Sender>>,
-    is_client: bool,
-    chan_out: Sender<String>,
-    chan_in: Sender<String>,
+    ws: Sender,
+    chan_sender: Sender<String>,
+    chan_receiver: Sender<String>,
 }
 
 impl Exchange {
     pub fn new(exchange_uri: String) -> Result<Exchange, ExchangeError> {
-        let (s, r) = unbounded::<String>();
-        let ws = connect(exchange_uri, |r| {
-            move |msg| {
-                println!("Got message: {}", msg);
-                r.close(CloseCode::Normal)
-            }
-        })
-        .unwrap();
+        // have this new thread take ownership of exchange_uri string
+        thread::spawn(move || {
+            let (s, r) = unbounded::<String>();
+            let ws = connect(exchange_uri, |r| {
+                move || {
+                    // println!("Got message: {}", msg);
+                    // r.close(CloseCode::Normal)
+                }
+            });
+        });
+        /*
         Self {
             ws: ws,
-            chan_out: s,
-            chan_in: r,
+            chan_sender: s,
+            chan_receiver: r,
         }
+        */
     }
 }
 
+// Clone a copy from the heap.  This instance of Exchange still references
+// the original object
 impl Clone for Exchange {
     fn clone(&self) -> Exchange {
         Exchange {
             ws: self.ws.clone(),
             is_client: self.is_client.clone(),
+            chan_sender: self.clone(),
+            chan_receiver: self.clone(),
         }
     }
 }
 
-/* TODO: Implement Drop
+/*
+// Drop the exchange.  This cleans up all exchange resources when exchange goes
+// out of heap
 impl Drop for Exchange {
     fn drop(&mut self) {
         self.ws.
