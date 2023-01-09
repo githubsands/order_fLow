@@ -96,7 +96,7 @@ mod tests {
             let host = cloned_host.lock().unwrap();
             if let Err(error) = ws::listen(host.to_string(), |out| {
                 move |msg| {
-                    println!("Server got mesage '{}'", msg);
+                    println!("Server got message '{}'", msg);
                     out.send(msg)
                 }
             }) {
