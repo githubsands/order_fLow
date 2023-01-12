@@ -1,16 +1,24 @@
-use std::boxed::Box;
 use std::error::Error;
 use std::iter::Iterator;
 use std::vec;
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug)]
+enum OrderType {
+    LimitOrder,
+    StopLossOrder,
+    TrailingOrder,
+}
+
+#[derive(Clone, Debug)]
 pub struct Order {
-    id: u8,
+    kind: OrderType,
+    id: i64,
+    capital: u8,
 }
 
 pub enum OrdersManagerError {
     OrdersNonExistent,
-    OrderDoesntExist(u8),
+    OrderDoesntExist(i64),
 }
 
 #[derive(Clone, Debug)]
@@ -42,7 +50,7 @@ impl OrderManager {
         self.orders.append(&mut orders)
     }
 
-    fn get_order(&self, id: u8) -> Result<Order, OrdersManagerError> {
+    fn get_order(&self, id: i64) -> Result<Order, OrdersManagerError> {
         for (_index, value) in self.orders.iter().enumerate() {
             if value.id == id {
                 let order = value.clone();
@@ -52,7 +60,7 @@ impl OrderManager {
         Err(OrdersManagerError::OrderDoesntExist(id))?
     }
 
-    fn remove_order(&mut self, id: u8) -> Result<u8, OrdersManagerError> {
+    fn remove_order(&mut self, id: i64) -> Result<i64, OrdersManagerError> {
         for order in &mut self.orders {
             if order.id == id {
                 order.id = 0;
