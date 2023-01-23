@@ -1,6 +1,9 @@
-// use crate::signal::Signal;
 use crossbeam_channel::{select, unbounded, Receiver, Sender};
 use std::thread;
+
+pub struct StrategyConfig {
+    kline_period: &'static str,
+}
 
 pub trait Strategy {
     fn allocate() {
@@ -19,19 +22,9 @@ struct capital {
     amount: u128,
 }
 
-// TODO: peculiar situation here.  how we grab 2 signals in the same time period
-// to basis our decision from?
-struct Signal {
-    location: &'static str,
-    price: u128,
-    timestamp: u64,
-}
-
-struct Order {}
-
-struct Arbritage {
-    order_sender: Sender<Order>,
-    signal_receiver: Receiver<Signal>,
+pub struct Arbritage {
+    asset_one: &'static str,
+    asset_tow: &'static str,
 }
 
 impl Strategy for Arbritage {

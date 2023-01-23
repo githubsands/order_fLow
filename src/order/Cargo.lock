@@ -22,10 +22,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "message_handler"
+version = "0.1.0"
+
+[[package]]
 name = "order"
 version = "0.1.0"
 dependencies = [
  "derive_more",
+ "message_handler",
 ]
 
 [[package]]

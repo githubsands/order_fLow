@@ -1,6 +1,5 @@
 #![deny(warnings)]
 
-crate::config::*,
 use serde_derive::Deserialize;
 use std::collections::HashMap;
 use std::env;
@@ -11,6 +10,7 @@ use toml;
 #[derive(Deserialize, Debug, PartialEq)]
 pub struct Config {
     exchanges: Option<HashMap<&'static str, ExchangeConfig>>,
+    core: Option<CoreConfig>,
 }
 
 pub fn deserialize_config(config_file_name: &str) -> Config {

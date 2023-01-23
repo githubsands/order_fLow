@@ -9,3 +9,6 @@ edition = "2021"
 crossbeam-channel = "0.5.6"
 serde = "1.0.152"
 ws = "0.9.2"
+message = { path = "../message"}
+order = { path = "../order"}
+signal = { path = "../signal"}

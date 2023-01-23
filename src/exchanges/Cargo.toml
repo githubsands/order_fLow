@@ -1,5 +1,5 @@
 [package]
-name = "router"
+name = "exchanges"
 version = "0.1.0"
 edition = "2021"
 
@@ -7,8 +7,6 @@ edition = "2021"
 
 [dependencies]
 crossbeam-channel = "0.5.6"
-lazy_static = "1.4.0"
-select = "0.6.0"
-message = { path = "../message"}
-order = { path = "../order"}
-signal = { path = "../signal"}
+
+[dependencies.exchange]
+path = "../exchange"

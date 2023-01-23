@@ -1,5 +1,11 @@
 #[macro_use]
 extern crate lazy_static;
+extern crate message;
+extern crate order;
+extern crate signal;
+use message::Msg;
+use order::Order;
+use signal::Signal;
 
 use crossbeam_channel::select;
 use crossbeam_channel::unbounded;
@@ -9,43 +15,63 @@ use crossbeam_channel::Sender;
 use std::collections::HashMap;
 
 use std::sync::Arc;
-use std::sync::RwLock;
+use std::sync::Mutex;
 
-// TODO: Move to exchanges lib
-lazy_static! {
-    static ref HASHMAP: HashMap<&'static str, Arc<RwLock<Sender<i32>>>> = {
-        let (exchange_one_sender, _) = unbounded();
-        let (exchange_two_sender, _) = unbounded();
-        let mut m = HashMap::new();
-        m.insert("exchange_one", Arc::new(RwLock::new(exchange_one_sender)));
-        m.insert("exchange_two", Arc::new(RwLock::new(exchange_two_sender)));
-        m
-    };
+enum RouterError {
+    FailedToRouteOrder,
+    FailedToRouteSignal,
 }
 
-// Router receives orders upstream to be sent to their respective exchanges
-pub struct OrderRouter {
-    router_receiver: Arc<RwLock<Receiver<i32>>>, // TODO: change type to OrderRouter channels
-    router_sender: Arc<Sender<i32>>,
-    // exchanges: HashMap<&'static str, Arc<RwLock<Sender<i32>>>>,
+// Router receives signals and orders. to be sent to their respective exchanges components
+pub struct Router {
+    router_receiver: Arc<Receiver<Msg>>,
+    router_sender: Arc<Sender<Msg>>,
+    // exchanges: HashMap<&'static str, Arc<Mutex<Sender<Exchange>>>>,
 }
 
-impl OrderRouter {
+impl Router {
     fn new() -> Self {
         let (sender, receiver) = unbounded();
         Self {
-            router_receiver: Arc::new(RwLock::new(receiver)),
+            router_receiver: Arc::new(receiver),
             router_sender: Arc::new(sender),
         }
     }
-    fn route_orders(self) {
+    pub fn route(self) {
         loop {
             select! {
-                recv(*self.router_receiver.clone().write().unwrap()) -> order => println!("received order to be routed"),
+                    recv(*self.router_receiver) -> msg_crossbeam =>
+                    {
+                        let msg = msg_crossbeam.unwrap();
+                        match msg {
+                            Msg::Order(order) => {
+                                let result = match self.route_order(order) {
+                                    // TODO: Handle errors
+                                    Ok(_) | Err(_) => todo!(),
+                                };
+                            }
+                            Msg::Signal(signal) => {
+                                let result = match self.route_signal(signal) {
+                                    // TODO: Handle errors
+                                    Ok(_) | Err(_) => todo!(),
+                                };
+                        }
+                    }
+                }
             }
         }
     }
-    pub fn get_sender(&mut self) -> Arc<Sender<i32>> {
-        return self.router_sender.clone();
+    fn route_order(self, order: Order) -> Result<(), RouterError> {
+        // TODO:
+        Ok(())
     }
+    fn route_signal(self, signal: Signal) -> Result<(), RouterError> {
+        // TODO::
+        Ok(())
+    }
+    /*
+    pub fn get_sender(&mut self) -> Arc<Sender<i32>> {
+        return self.router_sender.lock().clone();
+    }
+    */
 }

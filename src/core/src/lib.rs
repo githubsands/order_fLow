@@ -4,26 +4,48 @@ use crossbeam_channel::unbounded;
 use crossbeam_channel::Receiver;
 use crossbeam_channel::Sender;
 
-use std::collections::HashMap;
+use threadpool::ThreadPool;
 
-use std::sync::Arc;
+use std::collections::HashMap;
+use std::sync::{Arc, Mutex};
+
+use crate::exchange::Exchange;
+use crate::signal::Signal;
+
+use serde_derive::Deserialize;
+
+#[derive(Deserialize)]
+pub struct CoreConfig {
+    strategy: &'static str,
+}
 
 pub struct Core {
-    core_receiver: Receiver<i32>,
-    core_sender: Arc<Sender<i32>>,
+    core_receiver: Receiver<Mutex<Signal>>,
+    core_sender: Arc<Mutex<Sender<i32>>>,
+    exchange_threads: ThreadPool,
 }
 
 impl Core {
     fn new() -> Self {
         let (sender, receiver) = unbounded();
+        let exchange_thread_pool = ThreadPool::new(exchange_configs.len());
         Self {
+            exchange_threads: exchange_thread_pool,
             core_receiver: receiver,
-            core_sender: Arc::new(sender),
+            core_sender: Arc::new(Mutex::new(sender)),
         }
     }
-}
+    /*
+    fn start_exchanges(&self, Vec<ExchangeConfig>) {
+        &self.exchange_thread_pool.execute(|| {
+            Exchange::new()
+            // create new exchange instance
+            // 1. pass in core's sender
+            // 2. add it too exchange vector
+        })
+    }
+    */
 
-impl Core {
     /*
     pub fn get_exchange_uri(self, exchange_name: &str) -> Result<&str, ExchangeError> {
         let exchange = self.exchanges.get(exchange_name);

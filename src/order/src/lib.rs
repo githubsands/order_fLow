@@ -2,6 +2,9 @@ use std::error::Error;
 use std::iter::Iterator;
 use std::vec;
 
+extern crate message_handler;
+use message_handler::FromWSMsg;
+
 #[derive(Clone, Debug)]
 enum OrderType {
     LimitOrder,
@@ -15,6 +18,8 @@ pub struct Order {
     id: i64,
     capital: u8,
 }
+
+impl FromWSMsg for Order {}
 
 pub enum OrdersManagerError {
     OrdersNonExistent,
@@ -34,22 +39,18 @@ impl OrderManager {
             count: 0,
         }
     }
-
     fn add_order(&mut self, order: Order) {
         self.orders.push(order)
     }
-
     fn orders(self) -> Result<Vec<Order>, OrdersManagerError> {
         if self.orders.len() == 0 {
             Err(OrdersManagerError::OrdersNonExistent)?
         }
         Ok(self.orders)
     }
-
     fn orders_add(&mut self, mut orders: Vec<Order>) {
         self.orders.append(&mut orders)
     }
-
     fn get_order(&self, id: i64) -> Result<Order, OrdersManagerError> {
         for (_index, value) in self.orders.iter().enumerate() {
             if value.id == id {
@@ -59,7 +60,6 @@ impl OrderManager {
         }
         Err(OrdersManagerError::OrderDoesntExist(id))?
     }
-
     fn remove_order(&mut self, id: i64) -> Result<i64, OrdersManagerError> {
         for order in &mut self.orders {
             if order.id == id {

@@ -1,38 +1,61 @@
-use crossbeam_channel::unbounded;
+#![deny(warnings)]
+#![allow(warnings, unused)]
+use crossbeam_channel::{unbounded, Receiver, Sender};
 use std::sync::{Arc, Mutex};
-use std::{thread, time};
-use ws::{connect, listen, CloseCode, Factory, Handler, Sender, WebSocket};
+use ws::{connect, CloseCode, Factory, Handler, Message, WebSocket};
+
+extern crate message;
+extern crate order;
+extern crate signal;
+use message::Msg;
+
+pub struct ExchangeConfig {
+    exchange_uri: &'static str,
+}
 
 pub struct Exchange {
-    ws: Sender,
-    chan_sender: Sender<String>,
-    chan_receiver: Sender<String>,
+    name: &'static str,
+    uri: &'static str,
+    ws: Option<WebSocket>,
+    chan_sender: Arc<Mutex<Sender<Msg>>,
+    chan_receiver: Arc<Mutex<Receiver<Msg>>,
 }
 
 impl Exchange {
-    pub fn new(exchange_uri: String) -> Result<Exchange, ExchangeError> {
-        // have this new thread take ownership of exchange_uri string
-        thread::spawn(move || {
-            let (s, r) = unbounded::<String>();
-            let ws = connect(exchange_uri, |r| {
-                move || {
-                    // println!("Got message: {}", msg);
-                    // r.close(CloseCode::Normal)
-                }
-            });
-        });
-        /*
+    pub fn new(name: &'static str, uri: &'static str) -> Exchange {
+        let (s, r) = unbounded();
         Self {
-            ws: ws,
+            name: name,
+            uri: uri,
             chan_sender: s,
             chan_receiver: r,
         }
-        */
     }
+    pub fn start(&self) {
+        let ws = connect(self.uri, |r| {
+            move || loop {
+                println!("starting")
+            }
+        });
+        self.ws = ws;
+    }
+    pub fn execute_order(self) -> Result<(), ExchangeError> {}
 }
 
-// Clone a copy from the heap.  This instance of Exchange still references
-// the original object
+impl ws::Handler for Exchange {
+    fn on_message(&mut self, msg: Message) -> Result<(), ()> {
+        self.sender.send(msg);
+    }
+    //
+    // fn on_open
+    //
+    // fn on_close
+    //
+    // fn on_error
+    //
+    //
+}
+
 impl Clone for Exchange {
     fn clone(&self) -> Exchange {
         Exchange {
@@ -44,56 +67,23 @@ impl Clone for Exchange {
     }
 }
 
-/*
-// Drop the exchange.  This cleans up all exchange resources when exchange goes
-// out of heap
-impl Drop for Exchange {
-    fn drop(&mut self) {
-        self.ws.
-    }
-}
-*/
-
 #[derive(Debug)]
 pub enum ExchangeError {
-    // #[error("Error connecting to the exchange {}")]
     ExchangeErrorConnectingToExchange(String),
+    ExchangeErrorSubmittingErrorToExchange(String, u8),
 }
-
-/*
-impl Handler for Exchange {}
-
-struct ExchangeFactory;
-
-impl Factory for ExchangeFactory {
-    type Handler = Exchange;
-    fn client_connected(&mut self, ws: Sender) -> Exchange {
-        Exchange {
-            ws: ws,
-            is_client: true,
-        }
-    }
-    fn connection_made(&mut self, ws: Sender) -> Exchange {
-        Exchange {
-            ws: ws,
-            is_client: false,
-        }
-    }
-}
-*/
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use std::{thread, time};
-
     #[test]
     fn test_ws_connection() {
         let host = Arc::new(Mutex::new("localhost:3082".to_string()));
         let cloned_host = Arc::clone(&host);
         let exchange_server = thread::spawn(move || {
             println!("running ws server");
-            let host = cloned_host.lock().unwrap();
+            let host = cloned_host.lock()?;
             if let Err(error) = ws::listen(host.to_string(), |out| {
                 move |msg| {
                     println!("Server got message '{}'", msg);
@@ -103,7 +93,7 @@ mod tests {
                 println!("Failed to create websocket due to {:?}", error);
             }
         });
-        let host_use = host.lock().unwrap();
+        let host_use = host.lock()?;
         let exchange_connection = Exchange::new(host_use.to_string());
         thread::sleep(time::Duration::from_millis(30));
     }
