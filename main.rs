@@ -1,25 +1,25 @@
-use clap::{arg, Command};
+use std::env;
+use std::error::Error;
+extern crate config;
+extern crate core;
+use config::{Config, Deserialize_config};
+use core::Core;
 
-fn main() {}
-    let cli_flags = cli().get_matches;
-    match matches.subcommand() {
-        Some(("exchanges", sub_matches)) => {
-        println!(
-            "exchanges"
-        );
+fn main() {
+    let result = order_flow();
+    match result {
+        Ok(_) => println!("successful shutdown"),
+        Err(e) => println!("failed to run exchange {}", e),
     }
 }
 
-fn cli_flags() {
-    Command::new("exchanges")
-        .about("The exchanges to bootstrap this alg trader with")
-        .subcommand_required(true)
-        .arg_required_else_help(true)
-        .allow_external_subcommands(true)
-        .subcommand(
-            Command::new("clone")
-                .about("Clones repos")
-                .arg(arg!(<REMOTE> "The remote to clone"))
-                .arg_required_else_help(true),
-        )
+fn order_flow() -> Result<(), error::Error> {
+    match env::var("CONFIG_PATH") {
+        Ok(result) => {
+            let cfg = Deserialize_config();
+            let _core = core::new(cfg);
+            Ok(())
+        }
+        Err(e) => Err(e),
+    }
 }

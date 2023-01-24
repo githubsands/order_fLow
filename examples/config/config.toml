@@ -1,0 +1,21 @@
+# https://github.com/toml-lang/toml
+
+[Core]
+    strategy = "arbritage-simple-0v.1.0"
+
+[Exchanges]
+  [Exchange.binance]
+  name = "test_1"
+  uri = "test_1_uri"
+  thread_stack_size = "128kb"
+
+  [Exchange.DYDX]
+  name = "test_2"
+  uri = "test_2_uri"
+  thread_stack_size = "128kb"
+
+[Router]
+    thread_stacksize = "128kb"
+
+[Strategizer]
+    thread_stacksize = "256kb"
