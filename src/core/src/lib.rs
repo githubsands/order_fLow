@@ -9,8 +9,17 @@ use threadpool::ThreadPool;
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 
+extern crate exchange;
+extern crate message;
+extern crate router;
+extern crate signal;
+extern crate strategy;
+
 use crate::exchange::Exchange;
+use crate::message::Msg;
+use crate::router::Router;
 use crate::signal::Signal;
+use crate::strategy::Arbritage;
 
 use serde_derive::Deserialize;
 
@@ -20,23 +29,35 @@ pub struct CoreConfig {
 }
 
 pub struct Core {
-    core_receiver: Receiver<Mutex<Signal>>,
-    core_sender: Arc<Mutex<Sender<i32>>>,
-    exchange_threads: ThreadPool,
+    core_receiver: Arc<Receiver<Msg>>,
+    core_sender: Arc<Sender<Msg>>,
+    exchanges: ThreadPool,
+    router: Router,
+    router_thread: Option<std::thread>,
+    strategizer: Arbritage,
+    strategizer_thread: Option<std::thread>,
 }
 
 impl Core {
-    fn new() -> Self {
+    fn new(config: config::Config}-> Self {
         let (sender, receiver) = unbounded();
         let exchange_thread_pool = ThreadPool::new(exchange_configs.len());
+        let router = Router::new();
+        let strategizer = Strategizer::new();
         Self {
-            exchange_threads: exchange_thread_pool,
-            core_receiver: receiver,
-            core_sender: Arc::new(Mutex::new(sender)),
+            exchanges: exchange_thread_pool,
+            core_receiver: Arc::new(receiver),
+            core_sender: Arc::new(sender),
+            router: router,
+            strategizer: Arbritage,
         }
     }
+    fn start_threads(&mut self) {
+        self.router_thread = thread::spawn(move || self.router.route());
+        self.strategizer_thread = thread::spawn(move || self.strategizer.receive_signals())
+    }
     /*
-    fn start_exchanges(&self, Vec<ExchangeConfig>) {
+    fn start_exchanges(&self, Vec<ExchangeConfig>) -> Result<(),error::Error> {
         &self.exchange_thread_pool.execute(|| {
             Exchange::new()
             // create new exchange instance
@@ -45,18 +66,7 @@ impl Core {
         })
     }
     */
-
     /*
-    pub fn get_exchange_uri(self, exchange_name: &str) -> Result<&str, ExchangeError> {
-        let exchange = self.exchanges.get(exchange_name);
-        match exchange {
-            Some(_exchange) => Ok(exchange_name),
-            None => Err(ExchangeError::ExchangeDoesNotExist(
-                exchange_name.to_string(),
-            )),
-        }
-    }
-    */
     pub fn receive_signals(&self) {
         loop {
             select! {
@@ -64,6 +74,7 @@ impl Core {
             }
         }
     }
+    */
     pub fn get_sender(&mut self) -> Arc<Sender<i32>> {
         return self.core_sender.clone();
     }

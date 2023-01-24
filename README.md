@@ -6,7 +6,16 @@ This instance hopes to leverage a set number of cores related to the number of e
 it trades with so performance isn't dampened by the CPU scheduler and
 context switching
 
-# Architecture and modules
+# Threads:
+
+The process runs threads for the following flows:
+
+* strategizer : needed to set strategy on capital given exchange or other signal inputs
+* router: directs signal and order objects to their proper locations: strategizer and exchange
+* exchange(s): runs a loop on each websocket connection
+
+Each thread's stacksize is configurable.  See example config in the examples folder
+# Architecture and modules:
 
 . Exchange: defines websocket handling of each exchange participating and receives orders \
     from router. sends updated exchange parameters to core. \

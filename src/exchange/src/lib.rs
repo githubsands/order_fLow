@@ -17,8 +17,8 @@ pub struct Exchange {
     name: &'static str,
     uri: &'static str,
     ws: Option<WebSocket>,
-    chan_sender: Arc<Mutex<Sender<Msg>>,
-    chan_receiver: Arc<Mutex<Receiver<Msg>>,
+    chan_sender: Arc<Sender<Msg>>,
+    chan_receiver: Arc<Receiver<Msg>>,
 }
 
 impl Exchange {
@@ -39,7 +39,9 @@ impl Exchange {
         });
         self.ws = ws;
     }
+    /*
     pub fn execute_order(self) -> Result<(), ExchangeError> {}
+    */
 }
 
 impl ws::Handler for Exchange {

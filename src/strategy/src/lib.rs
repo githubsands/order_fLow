@@ -1,8 +1,9 @@
 use crossbeam_channel::{select, unbounded, Receiver, Sender};
 use std::thread;
 
-pub struct StrategyConfig {
+pub struct Config {
     kline_period: &'static str,
+    thread_stacksize: Option<&'static str>,
 }
 
 pub trait Strategy {
@@ -22,9 +23,12 @@ struct capital {
     amount: u128,
 }
 
-pub struct Arbritage {
-    asset_one: &'static str,
-    asset_tow: &'static str,
+pub struct Arbritage {}
+
+impl Arbritage {
+    fn new() -> Arbritage {
+        Self {}
+    }
 }
 
 impl Strategy for Arbritage {
@@ -37,3 +41,6 @@ impl Strategy for Arbritage {
         });
     }
 }
+
+#[cfg(test)]
+mod tests {}

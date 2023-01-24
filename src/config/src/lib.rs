@@ -7,13 +7,30 @@ use std::fs::File;
 use std::io::BufReader;
 use toml;
 
+extern crate exchange;
+extern crate core;
+extern crate router;
+extern crate strategizer;
+use exchange::Config as ExchangeConfig;
+use core::Config as CoreConfig;
+use router::Config as RouterConfig;
+use strategy::Config as StrategyConfig;
+
 #[derive(Deserialize, Debug, PartialEq)]
 pub struct Config {
     exchanges: Option<HashMap<&'static str, ExchangeConfig>>,
     core: Option<CoreConfig>,
+    router: Option<RouterConfig>,
+    strategy: Option<StrategyConfig>,
 }
 
-pub fn deserialize_config(config_file_name: &str) -> Config {
+impl Config {
+    pub fn router(&self) router::Config {
+        return *self.router
+    }
+}
+
+pub fn Deserialize_config(config_file_name: &str) -> Config {
     let mut process_config_filepath = env::current_dir()
         .unwrap()
         .into_os_string()

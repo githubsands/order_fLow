@@ -22,15 +22,18 @@ enum RouterError {
     FailedToRouteSignal,
 }
 
+pub struct Config {
+    thread_stacksize: Option<&'static str>,
+}
+
 // Router receives signals and orders. to be sent to their respective exchanges components
 pub struct Router {
     router_receiver: Arc<Receiver<Msg>>,
     router_sender: Arc<Sender<Msg>>,
-    // exchanges: HashMap<&'static str, Arc<Mutex<Sender<Exchange>>>>,
 }
 
 impl Router {
-    fn new() -> Self {
+    pub fn new(config: Config) -> Self {
         let (sender, receiver) = unbounded();
         Self {
             router_receiver: Arc::new(receiver),

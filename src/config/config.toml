@@ -7,7 +7,15 @@
   [Exchange.binance]
   name = "test_1"
   uri = "test_1_uri"
+  stack_size = "128kb"
 
   [Exchange.DYDX]
   name = "test_2"
   uri = "test_2_uri"
+  stack_size = "128kb"
+
+[Router]
+    stacksize = "128kb"
+
+[Strategizer]
+    stacksize = "256kb"
