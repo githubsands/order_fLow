@@ -6,10 +6,19 @@ use message_handler::FromWSMsg;
 //    holds parameter updates on a specific market. orderbooks
 //    is represent as a tuple(amounts,price_point)
 pub struct Signal {
+    // TODO: Implement this here Signal --
+    /*
     volume: usize,
     price: i32,
     exchange: String,
     kline: kline,
+    */
+}
+
+impl Signal {
+    pub fn new() -> Self {
+        Self {}
+    }
 }
 
 impl FromWSMsg for Signal {}
