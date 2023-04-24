@@ -1,4 +1,4 @@
-# Order Flow - Algorithmic trader
+# <span style="color:green">Order Flow - Algorithmic trader</span>
 
 Order flow is divided into two servers - sync an async.  Each server
 leverages different paradigms concurrency through os threads or epolling, green
@@ -7,7 +7,7 @@ threads (tasks), and concurrency.
 The sync server is is major WIP, older, and incomplete. The async server
 is more up to speed on my latest rust skills.
 
-## sync
+## <span style="color:red">sync</span>
 
 Algorithimic order router server in rust using concurrent over async paradigms.
 
@@ -37,7 +37,7 @@ Each thread's stacksize is configurable.  See example config in the examples fol
 (1) [ws-rs](https://github.com/housleyjk/ws-rs) - the only nonasync websocket client I could find. use [tokio mio](https://github.com/tokio-rs/miounder) under the hood \
 (2) [cross-beam](https://github.com/crossbeam-rs/crossbeam) - a drop in crate for mspc \
 
-## async
+## <span style="color:red">sync</span>
 
 Async for websocket client I/O and sync for internal CPU related work.
 
