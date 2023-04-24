@@ -1,6 +1,11 @@
 # Order Flow - Algorithmic trader
 
-Order flow is divided into two servers - sync an async
+Order flow is divided into two servers - sync an async.  Each server
+leverages different paradigms concurrency through os threads or epolling, green
+threads (tasks), and concurrency.
+
+The sync server is is major WIP, older, and incomplete. The async server
+is more up to speed on my latest rust skills.
 
 ## sync
 
@@ -17,7 +22,8 @@ The process runs threads for the following flows:
 * exchange(s): runs a loop on each websocket connection
 
 Each thread's stacksize is configurable.  See example config in the examples folder
-# Architecture and modules:
+
+### Architecture and modules:
 
 . Exchange: defines websocket handling of each exchange participating and receives orders \
     from router. sends updated exchange parameters to core. \
@@ -26,17 +32,28 @@ Each thread's stacksize is configurable.  See example config in the examples fol
     from router. sends updated exchange parameters to core. receives routed orders from router. \
 . Core: pulls the main modules together \
 
-# Libraries used
+### Libraries used
 
 (1) [ws-rs](https://github.com/housleyjk/ws-rs) - the only nonasync websocket client I could find. use [tokio mio](https://github.com/tokio-rs/miounder) under the hood \
 (2) [cross-beam](https://github.com/crossbeam-rs/crossbeam) - a drop in crate for mspc \
 
-# Inspired by
+## async
+
+Async for websocket client I/O and sync for internal CPU related work.
+
+### Architecture
+
+I/O related workloads are ran on a tokio executor. Tasks (websocket reads)
+are sent to the sync portion through a crossbeam producer to be handled.
+
+### Libraries used
+
+(1) tungesenite - websocket server
+(2) tokio - async related libraries
+(3) future-utils - more async tools
+(4) crossbeam - mpsc channel
+
+### Inspired by
 
 (1) https://www.amazon.com/Algorithmic-Trading-DMA-introduction-strategies/dp/0956399207 \
 (2) https://academic.oup.com/book/2928 \
-
-
-## async
-
-Async for websocket client I/O and sync for internal CPU related work
