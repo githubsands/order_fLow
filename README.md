@@ -49,8 +49,11 @@ are sent to the sync portion through a crossbeam producer to be handled.
 ### Libraries used
 
 (1) tungesenite - websocket server
+
 (2) tokio - async related libraries
+
 (3) future-utils - more async tools
+
 (4) crossbeam - mpsc channel
 
 ### Inspired by
