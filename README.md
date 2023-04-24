@@ -1,12 +1,14 @@
 # Order Flow - Algorithmic trader
 
+Order flow is divided into two servers - sync an async
+
+## sync
+
 Algorithimic order router server in rust using concurrent over async paradigms.
 
 This instance hopes to leverage a set number of cores related to the number of exchanges
 it trades with so performance isn't dampened by the CPU scheduler and
 context switching
-
-# Threads:
 
 The process runs threads for the following flows:
 
@@ -33,3 +35,8 @@ Each thread's stacksize is configurable.  See example config in the examples fol
 
 (1) https://www.amazon.com/Algorithmic-Trading-DMA-introduction-strategies/dp/0956399207 \
 (2) https://academic.oup.com/book/2928 \
+
+
+## async
+
+Async for websocket client I/O and sync for internal CPU related work

@@ -5,6 +5,8 @@ use message_handler::FromWSMsg;
 use order::Order;
 use signal::Signal;
 
+use ws::Message;
+
 pub enum Msg {
     Signal(Signal),
     Order(Order),
@@ -15,6 +17,11 @@ enum MsgResultError {
 }
 
 impl Msg {
+    pub fn from_ws_message(message: Message) -> Self {
+        // TO_DO: Add signal details
+        Msg::Signal(Signal::new())
+    }
+    /*
     fn signal<T>(&self) -> Result<&Signal, MsgResultError>
     where
         T: FromWSMsg,
@@ -34,4 +41,5 @@ impl Msg {
             Msg::Signal(_) => Err(MsgResultError::WrongType("Trade".to_string())),
         }
     }
+    */
 }

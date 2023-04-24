@@ -39,7 +39,7 @@ pub struct Core {
 }
 
 impl Core {
-    fn new(config: config::Config}-> Self {
+    fn new(config: config::Config) -> Self {
         let (sender, receiver) = unbounded();
         let exchange_thread_pool = ThreadPool::new(exchange_configs.len());
         let router = Router::new();

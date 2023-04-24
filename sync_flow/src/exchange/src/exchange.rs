@@ -44,9 +44,9 @@ impl Exchange {
         let websocket = self.websocket.unwrap();
         select! {
         recv(*self.order_receiver) -> order =>
-        {
-        websocket.send(ws::Message::Text("test".to_string()));
-        }
+            {
+                websocket.send(ws::Message::Text("test".to_string()));
+            }
         }
     }
     fn set_ws(&mut self, websocket: ws::Sender) {

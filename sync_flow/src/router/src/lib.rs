@@ -30,14 +30,16 @@ pub struct Config {
 pub struct Router {
     router_receiver: Arc<Receiver<Msg>>,
     router_sender: Arc<Sender<Msg>>,
+    exchange_senders: Arc<HashMap<&'static str, Sender<Msg>>>,
 }
 
 impl Router {
-    pub fn new(config: Config) -> Self {
+    pub fn new(exchange_senders: Arc<HashMap<&'static str, Sender<Msg>>>) -> Self {
         let (sender, receiver) = unbounded();
         Self {
             router_receiver: Arc::new(receiver),
-            router_sender: Arc::new(sender),
+            signal_receiver: signal_receiver,
+            exchange_senders: exchange_senders,
         }
     }
     pub fn route(self) {
@@ -49,7 +51,6 @@ impl Router {
                         match msg {
                             Msg::Order(order) => {
                                 let result = match self.route_order(order) {
-                                    // TODO: Handle errors
                                     Ok(_) | Err(_) => todo!(),
                                 };
                             }
@@ -65,16 +66,21 @@ impl Router {
         }
     }
     fn route_order(self, order: Order) -> Result<(), RouterError> {
-        // TODO:
-        Ok(())
+        let senders = self.exchange_senders.get(order.exchange);
+        match senders {
+            Some(senders) => {
+                senders.send(Msg::Order(order));
+                Ok(())
+            }
+            None => Err(RouterError::FailedToRouteOrder),
+        }
     }
     fn route_signal(self, signal: Signal) -> Result<(), RouterError> {
-        // TODO::
-        Ok(())
+        self.signal_sender(Msg::Sender(signal));
     }
-    /*
-    pub fn get_sender(&mut self) -> Arc<Sender<i32>> {
-        return self.router_sender.lock().clone();
-    }
-    */
 }
+/*
+pub fn get_sender(&mut self) -> Arc<Sender<i32>> {
+    return self.router_sender.lock().clone();
+}
+*/

@@ -14,6 +14,7 @@ enum OrderType {
 
 #[derive(Clone, Debug)]
 pub struct Order {
+    pub exchange: &'static str,
     kind: OrderType,
     id: i64,
     capital: u8,
@@ -73,7 +74,6 @@ impl OrderManager {
 
 impl Iterator for OrderManager {
     type Item = usize;
-
     fn next(&mut self) -> Option<Self::Item> {
         self.count += 1;
         if self.count < self.orders.len() {
