@@ -1,0 +1,20 @@
+[package]
+name = "orders"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+tokio = { version = "1.0", features = ["full"] }
+tungstenite = "0.15"
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+url = "2.3.1"
+futures = "0.3.28"
+futures-util = "0.3.28"
+tokio-tungstenite = "*"
+
+[[bin]]
+name = "orders"
+path = "main.rs"
