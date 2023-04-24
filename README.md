@@ -37,7 +37,7 @@ Each thread's stacksize is configurable.  See example config in the examples fol
 (1) [ws-rs](https://github.com/housleyjk/ws-rs) - the only nonasync websocket client I could find. use [tokio mio](https://github.com/tokio-rs/miounder) under the hood \
 (2) [cross-beam](https://github.com/crossbeam-rs/crossbeam) - a drop in crate for mspc \
 
-## <span style="color:red">sync</span>
+## <span style="color:red">async</span>
 
 Async for websocket client I/O and sync for internal CPU related work.
 
