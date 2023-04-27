@@ -40,10 +40,12 @@ Each thread's stacksize is configurable.  See example config in the examples fol
 
 Async for websocket client I/O and sync for internal CPU related work.
 
-### Architecture
+### Architecture and modules:
 
 I/O related workloads are ran on a tokio executor. Tasks (websocket reads)
 are sent to the sync portion through a crossbeam producer to be handled.
+
+#### modules TBD
 
 ### Libraries used
 
