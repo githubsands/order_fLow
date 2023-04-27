@@ -19,7 +19,7 @@ The process runs threads for the following flows:
 * strategizer : needed to set strategy on capital given exchange or other signal inputs
 * router: directs signal and order objects to their proper locations: strategizer and exchange
 * exchange(s): runs a loop on each websocket connection
-* 
+
 ### Architecture and modules:
 
 . Exchange: defines websocket handling of each exchange participating and receives orders \
