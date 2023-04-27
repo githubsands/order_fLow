@@ -4,8 +4,7 @@ Order flow is divided into two servers - sync an async.  Each server
 leverages different paradigms concurrency through os threads or epolling, green
 threads (tasks), and concurrency.
 
-The sync server is is major WIP, older, and incomplete. The async server
-is more up to speed on my latest rust skills.
+Both servers are a WIP. The former sync only server is an abandoned project.
 
 ## <span style="color:red">sync</span>
 
